@@ -1,0 +1,210 @@
+{
+  "name": "DraRay_AtualizaEventosWebhook_Bckp",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "n8n_chat_histories",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "active",
+              "fieldValue": "false"
+            },
+            {
+              "fieldId": "cancelado_por",
+              "fieldValue": "Webhook"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ $now.format('yyyy-MM-dd HH:MM:ss') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        256,
+        64
+      ],
+      "id": "6b78a5e2-a300-47b0-bd12-7b1aa6ed5dfc",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "limInTnSM5C7y5Bg",
+          "name": "SupabaseFernando"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "calendarId": {
+          "__rl": true,
+          "value": "eb129c5ec1c3c66c00fa94749c9f9f8c8833d351fd8aa084bf2c5bc096254bb2@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Teste_Bckup"
+        },
+        "triggerOn": "eventCancelled",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTrigger",
+      "typeVersion": 1,
+      "position": [
+        48,
+        64
+      ],
+      "id": "a70ca376-9e7d-481e-a0b1-ee6a72e9649c",
+      "name": "EventoCancelado",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "3g2Kh6mxA4ZgMr9d",
+          "name": "CalendarFernando"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "calendarId": {
+          "__rl": true,
+          "value": "eb129c5ec1c3c66c00fa94749c9f9f8c8833d351fd8aa084bf2c5bc096254bb2@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Teste_Bckup"
+        },
+        "triggerOn": "eventUpdated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTrigger",
+      "typeVersion": 1,
+      "position": [
+        48,
+        288
+      ],
+      "id": "5de7bcad-91a6-42ec-8f88-b467cbafbd7f",
+      "name": "EventoAlterado",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "3g2Kh6mxA4ZgMr9d",
+          "name": "CalendarFernando"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "n8n_chat_histories",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "summary",
+              "fieldValue": "={{ $json.summary }}"
+            },
+            {
+              "fieldId": "description",
+              "fieldValue": "={{ $json.description }}"
+            },
+            {
+              "fieldId": "start_time",
+              "fieldValue": "={{ $json.start.dateTime.toDateTime().format('yyyy-MM-dd HH:mm:ss') }}"
+            },
+            {
+              "fieldId": "end_time",
+              "fieldValue": "={{ $json.end.dateTime.toDateTime().format('yyyy-MM-dd HH:mm:ss') }}"
+            },
+            {
+              "fieldId": "attendee",
+              "fieldValue": "={{ $json.attendees[0].email || '' }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ $now }}"
+            },
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        256,
+        288
+      ],
+      "id": "287bd8b0-1582-4763-a080-e1c151b89108",
+      "name": "Update a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "limInTnSM5C7y5Bg",
+          "name": "SupabaseFernando"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "EventoCancelado": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EventoAlterado": {
+      "main": [
+        [
+          {
+            "node": "Update a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "212f4366-67c3-4d12-bdf6-c542f02222d2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "90585234410ca172721ae7500e05c0eb1db0fc54ccab2b8d63f0b588d3379c29"
+  },
+  "id": "g2hZ2wKsS8OChKvy",
+  "tags": []
+}

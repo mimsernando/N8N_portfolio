@@ -1,0 +1,778 @@
+{
+  "name": "DraRay_BuscaEvento_Bckp",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "chat_id"
+            },
+            {
+              "name": "event_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -320,
+        464
+      ],
+      "id": "a8440a8a-9cf9-40e3-83f5-5d1fa1b5b547",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b828032d-40df-4d05-874f-8318d73e0def",
+              "leftValue": "={{ $json.event_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        112,
+        464
+      ],
+      "id": "c5296a87-3653-48ac-b25a-09d7e0baf7b4",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "calendar": {
+          "__rl": true,
+          "value": "eb129c5ec1c3c66c00fa94749c9f9f8c8833d351fd8aa084bf2c5bc096254bb2@group.calendar.google.com",
+          "mode": "id"
+        },
+        "eventId": "={{ $json.event_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        288
+      ],
+      "id": "7616d7d8-8deb-46a1-b46c-3c5ed0c421d1",
+      "name": "Get an event",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "3g2Kh6mxA4ZgMr9d",
+          "name": "CalendarFernando"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "n8n_chat_histories",
+        "limit": 5,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.chat_id }}"
+            },
+            {
+              "keyName": "active",
+              "condition": "eq",
+              "keyValue": "true"
+            },
+            {
+              "keyName": "start_time",
+              "condition": "gt",
+              "keyValue": "={{ $now }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        336,
+        576
+      ],
+      "id": "8651ba34-1f86-4e0a-9584-5ce4ae5da5c9",
+      "name": "Get many rows",
+      "credentials": {
+        "supabaseApi": {
+          "id": "limInTnSM5C7y5Bg",
+          "name": "SupabaseFernando"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        560,
+        576
+      ],
+      "id": "941f7d9d-c7a8-449d-880a-e3691fa998b6",
+      "name": "Loop"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "db5cfe0a-7f43-4a61-8b27-bfd3a95deb8d",
+              "name": "events",
+              "value": "={{ $json.eventos }}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fa6b537b-4d96-440f-ba9a-fe83675126a2",
+      "name": "RemontaEventos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8b59df6a-44e5-421b-b0fa-efbf1033561e",
+              "name": "chat_id",
+              "value": "=5511994635950",
+              "type": "string"
+            },
+            {
+              "id": "e62f51e6-f5d5-46be-9b0d-f5ed8ce3e50b",
+              "name": "event_id",
+              "value": "={{ $json.event_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        464
+      ],
+      "id": "d6a207f8-34c0-4174-8448-8c9d96ec0d81",
+      "name": "Set"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "calendar": {
+          "__rl": true,
+          "value": "eb129c5ec1c3c66c00fa94749c9f9f8c8833d351fd8aa084bf2c5bc096254bb2@group.calendar.google.com",
+          "mode": "id"
+        },
+        "eventId": "={{ $json.event_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        784,
+        592
+      ],
+      "id": "dc5f6953-9ff7-43bc-ab3c-7b84d053b3a9",
+      "name": "Get an event1",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "3g2Kh6mxA4ZgMr9d",
+          "name": "CalendarFernando"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (JavaScript)\n// Entrada esperada: vários items, cada um com json.events (string)\n// Saída: 1 item com json.events (normalizados)\n\nconst TZ = 'America/Sao_Paulo';\n\n// Helpers de formatação\nconst pad = (n) => String(n).padStart(2, '0');\n\nconst toDate = (iso) => new Date(iso);\n\nconst fmtDate = (d) =>\n  new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);\n\nconst fmtWeekday = (d) =>\n  new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, weekday: 'long' }).format(d);\n\nconst fmtTime = (d) =>\n  new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false }).format(d);\n\nconst ymd = (d) => {\n  const z = new Date(d.toLocaleString('en-US', { timeZone: TZ }));\n  return `${z.getFullYear()}-${pad(z.getMonth() + 1)}-${pad(z.getDate())}`;\n};\n\n// Extrator de link de reunião como fallback\nfunction extractMeetLink(desc) {\n  if (typeof desc !== 'string') return null;\n  const meet = desc.match(/https?:\\/\\/meet\\.google\\.com\\/[^\\s)]+/i);\n  if (meet) return meet[0];\n  const anyUrl = desc.match(/https?:\\/\\/[^\\s)]+/i);\n  return anyUrl ? anyUrl[0] : null;\n}\n\n// Parsing robusto da string \"events\"\nfunction parseEventsString(raw) {\n  if (!raw || typeof raw !== 'string') return [];\n  const s = raw.trim();\n  if (!s) return [];\n  const wrapped = s.startsWith('[') ? s : `[${s}]`;\n\n  try {\n    const arr = JSON.parse(wrapped);\n    return Array.isArray(arr) ? arr : [arr];\n  } catch (e) {\n    const cleaned = wrapped.replace(/\\n+/g, '').replace(/,\\s*]/g, ']');\n    try {\n      const arr2 = JSON.parse(cleaned);\n      return Array.isArray(arr2) ? arr2 : [arr2];\n    } catch (e2) {\n      try {\n        const body = s.replace(/^\\[/, '').replace(/\\]$/, '');\n        return body.split('},{').map((chunk) => {\n          if (!chunk.startsWith('{')) chunk = '{' + chunk;\n          if (!chunk.endsWith('}')) chunk = chunk + '}';\n          return JSON.parse(chunk);\n        });\n      } catch (e3) {\n        return [];\n      }\n    }\n  }\n}\n\n// Extrai campos da description\nfunction extractFromDescription(desc) {\n  if (typeof desc !== 'string') return {};\n  const lines = desc.split(/\\r?\\n/).map((l) => l.trim());\n  const getAfter = (label) => {\n    const line = lines.find((l) => l.toLowerCase().startsWith(label.toLowerCase()));\n    return line ? line.split(':').slice(1).join(':').trim() : undefined;\n  };\n  const cliente = getAfter('Reunião com o Cliente');\n  let telefone = getAfter('Telefone');\n  if (telefone) telefone = telefone.replace(/[^\\d+]/g, '');\n  let instagram = getAfter('Instagram');\n  if (instagram) instagram = instagram.replace(/^@/, '').trim();\n  const resumo = getAfter('Resumo');\n  return { cliente, telefone, instagram, resumo };\n}\n\n// Normaliza um evento\nfunction normalizeEvent(ev) {\n  const start = toDate(ev.start);\n  const end = toDate(ev.end);\n\n  const dateStr = fmtDate(start);\n  const weekday = fmtWeekday(start);\n  const startTime = fmtTime(start);\n  const endTime = fmtTime(end);\n  const ymdKey = ymd(start);\n\n  const extra = extractFromDescription(ev.description || '');\n  const linkMeet = ev.linkMeet || extractMeetLink(ev.description || '') || null;\n  const calendarId = ev.caledarId || ev.calendar_id || null; // pega o nome como veio ou no formato esperado\n\n  const label =\n    `${weekday.charAt(0).toUpperCase() + weekday.slice(1)}, ${dateStr} ` +\n    `${startTime}–${endTime} ${ev.summary ? ` ${ev.summary}` : ''}`.trim();\n\n  return {\n    id: ev.event_id,\n    title: ev.summary || '',\n    email: ev.email || '',\n    startISO: ev.start,\n    endISO: ev.end,\n    date: ymdKey,\n    dateBR: dateStr,\n    weekday,\n    startTime,\n    endTime,\n    label,\n    linkMeet,\n    calendarId,\n    ...extra,\n  };\n}\n\n// Junta todos os items de entrada\nconst items = $input.all();\nconst seen = new Map();\nfor (const it of items) {\n  const raw = it.json?.events;\n  const parsed = parseEventsString(raw);\n  for (const ev of parsed) {\n    const id = ev.event_id || `${ev.start}|${ev.summary || ''}`;\n    if (!seen.has(id)) {\n      seen.set(id, ev);\n    }\n  }\n}\n\n// Normaliza e ordena\nlet events = Array.from(seen.values()).map(normalizeEvent);\nevents.sort((a, b) => new Date(a.startISO) - new Date(b.startISO));\n\nreturn [\n  {\n    json: {\n      events\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        448
+      ],
+      "id": "6ffd972c-45bc-4e15-bbd6-0af0f00d02c1",
+      "name": "Code"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1840,
+        432
+      ],
+      "id": "576d11f3-0d5c-49c1-b661-1208589d62ec",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from n8n_chat_histories where\nchat_id='{{ $json.chat_id }}'\nand event_id='{{ $json.event_id }}'\nand start_time >= now()\nand active=true",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        336,
+        288
+      ],
+      "id": "6229b89d-6870-4cea-b867-cf46c94485ba",
+      "name": "Query",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wJVLjFbn0T9sm4HB",
+          "name": "FernandoPostgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ $('Set').item.json.chat_id }}_events",
+        "messageData": "={{ \nJSON.stringify\n(\n{\n'event_id':  $json.id ,\n'summary':  $json.summary ,\n'start':  $json.start.dateTime ,\n'end':  $json.end.dateTime ,\n'email':  $json.attendees[0].email ,\n'description': $json.description ,\n'linkMeet': $json.linkMeet ,\n'caledarId' : $json.calendar_id\n}\n)\n}}",
+        "tail": true
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        592
+      ],
+      "id": "f2cd8dfb-806a-41e8-a4c1-3611aa969aab",
+      "name": "AcumulaEventos",
+      "alwaysOutputData": true,
+      "credentials": {
+        "redis": {
+          "id": "Ls2D0Tsi906Hb8aA",
+          "name": "Redis ACC"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "=eventos",
+        "key": "={{ $('Set').item.json.chat_id }}_events",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        992,
+        448
+      ],
+      "id": "aa87b7c9-1117-4b0e-bda0-6f8b2a20c2e7",
+      "name": "BuscaMemoria",
+      "credentials": {
+        "redis": {
+          "id": "Ls2D0Tsi906Hb8aA",
+          "name": "Redis ACC"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=5511994635950_events"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        448
+      ],
+      "id": "314c575e-caff-4ee0-a4b0-8708761dc10c",
+      "name": "ApagaMemoria",
+      "credentials": {
+        "redis": {
+          "id": "Ls2D0Tsi906Hb8aA",
+          "name": "Redis ACC"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8105c46b-285d-4ef8-a02d-b700ad0af3fe",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        784,
+        288
+      ],
+      "id": "c203a78c-481d-4075-9d7f-371389cc4436",
+      "name": "If1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1600,
+        288
+      ],
+      "id": "5325e64f-da90-4e14-b011-e56cd15b1ba2",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dbed13c0-3816-4bf1-b77e-0f232f3e2ad0",
+              "name": "return",
+              "value": "indisponivel",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        160
+      ],
+      "id": "621aac4d-db54-436c-b36d-afc3b3b16f85",
+      "name": "MsgErro"
+    },
+    {
+      "parameters": {
+        "content": "## Fluxo de busca de Eventos relacionados a um usuário\n",
+        "height": 336,
+        "width": 2544
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -464,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "13b92872-dee1-4cb7-b0d2-209ce94b4e70",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "84851bc3-b5be-43f7-a87a-a97f6f021b6a",
+              "name": "event_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "63d95326-437d-4990-92fe-d67058b6af4c",
+              "name": "summary",
+              "value": "={{ $json.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "7ce70a3b-f853-4c6a-988d-199c29578fae",
+              "name": "=start",
+              "value": "={{ $json.start.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "4ddfc964-e5a1-40fa-9e0c-5d2145449d06",
+              "name": "end",
+              "value": "={{ $json.end.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "83c22ca4-a51c-43f4-8a4e-95d7b51c6554",
+              "name": "attendees[0].email",
+              "value": "={{ $json.attendees[0].email }}",
+              "type": "string"
+            },
+            {
+              "id": "e593b107-277b-4e5b-bf6b-1d54b3cd8603",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "a56cd714-fe1f-4b28-a33b-83b5cbffe3fd",
+              "name": "linkMeet",
+              "value": "={{ $json.conferenceData.entryPoints[0].uri || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f4531a86-d402-4111-a684-39cc15d300c2",
+              "name": "calendar_id",
+              "value": "={{ $json.organizer.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        304
+      ],
+      "id": "d1a8040d-6a94-4a70-9104-bf597ed9194a",
+      "name": "AjustaDados"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d9d6735f-0808-41ee-8563-bbb5f3309e13",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "afb237c3-7dcc-464b-bb1d-9890fde25cb9",
+              "name": "summary",
+              "value": "={{ $json.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "f93cc8ec-c16d-4405-8cd4-293d28069c97",
+              "name": "start.dateTime",
+              "value": "={{ $json.start.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "11793c82-b84f-4796-a755-7bd51472d994",
+              "name": "end.dateTime",
+              "value": "={{ $json.end.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "8540756a-9673-4ebb-b74f-efa01ff54b3e",
+              "name": "attendees[0].email",
+              "value": "={{ $json.attendees[0].email }}",
+              "type": "string"
+            },
+            {
+              "id": "cbcac4f6-8771-42d1-9055-db2896170129",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "640d9ba2-3eee-4f6c-9837-84225ad0bafb",
+              "name": "linkMeet",
+              "value": "={{ $json.conferenceData.entryPoints[0].uri }}",
+              "type": "string"
+            },
+            {
+              "id": "a9f596a6-072f-47a2-afbb-e97d5a54d52c",
+              "name": "calendar_id",
+              "value": "={{ $json.organizer.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        992,
+        592
+      ],
+      "id": "1349f916-2157-4284-8060-73a216e3d74f",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get an event": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop": {
+      "main": [
+        [
+          {
+            "node": "BuscaMemoria",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get an event1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RemontaEventos": {
+      "main": [
+        [
+          {
+            "node": "ApagaMemoria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get an event1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Query": {
+      "main": [
+        [
+          {
+            "node": "Get an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AcumulaEventos": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscaMemoria": {
+      "main": [
+        [
+          {
+            "node": "RemontaEventos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ApagaMemoria": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "MsgErro",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AjustaDados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MsgErro": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AjustaDados": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AcumulaEventos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "912cbd09-4bd6-4b21-9c15-9896119762ca",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "90585234410ca172721ae7500e05c0eb1db0fc54ccab2b8d63f0b588d3379c29"
+  },
+  "id": "zUqzUcmnlD1LEY36",
+  "tags": []
+}

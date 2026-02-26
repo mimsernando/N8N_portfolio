@@ -1,0 +1,198 @@
+{
+  "name": "DraRay_EventoDisponibilidade_Bckp",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0ced8de9-3b4c-4e08-9171-88d6df7bd41e",
+              "name": "start",
+              "value": "={{ $json.start + ' 07:59:00'}}",
+              "type": "string"
+            },
+            {
+              "id": "70a7a54f-adf6-48de-ac70-08bd827c5758",
+              "name": "calendarId",
+              "value": "={{ $json.caledarid }}",
+              "type": "string"
+            },
+            {
+              "id": "cae93ea0-2efe-4d3c-9733-da75c80399b7",
+              "name": "end",
+              "value": "={{ $json.start + ' 18:00:00'}}",
+              "type": "string"
+            },
+            {
+              "id": "504e9c26-1a41-445e-ab00-561c2d6fc11b",
+              "name": "segunda-feira",
+              "value": "08:00-19:00/12:00-13:00",
+              "type": "string"
+            },
+            {
+              "id": "d3d061d0-37b9-4509-a013-f75af6b64dc5",
+              "name": "terça-feira",
+              "value": "08:00-19:00/12:00-13:00",
+              "type": "string"
+            },
+            {
+              "id": "60d0b3aa-8245-4074-81e8-d420027c7d74",
+              "name": "quarta-feira",
+              "value": "08:00-19:00/12:00-13:00",
+              "type": "string"
+            },
+            {
+              "id": "6ce59d6d-5d45-4a37-b8af-4dbb9f90ec9c",
+              "name": "quinta-feira",
+              "value": "08:00-19:00/12:00-13:00",
+              "type": "string"
+            },
+            {
+              "id": "b0fdc7a3-5fe2-4fb0-bd2c-22a58dcaa18d",
+              "name": "sexta-feira",
+              "value": "08:00-19:00/12:00-13:00",
+              "type": "string"
+            },
+            {
+              "id": "b03ab3db-9452-49c9-b364-db086137ee9b",
+              "name": "sabado",
+              "value": "08:00-15:00/00:00-00:00",
+              "type": "string"
+            },
+            {
+              "id": "e42e5f89-a950-44f8-b02b-3f7c38f65673",
+              "name": "domingo",
+              "value": "00:00-00:00/00:00-00:00",
+              "type": "string"
+            },
+            {
+              "id": "bbc17daf-168a-41f9-8aa2-ae8fee0487bf",
+              "name": "duration",
+              "value": "00:30",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        -48
+      ],
+      "id": "8c38fe1c-9538-4084-b4e8-5d7788ea21fb",
+      "name": "Normaliza"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "=eb129c5ec1c3c66c00fa94749c9f9f8c8833d351fd8aa084bf2c5bc096254bb2@group.calendar.google.com",
+          "mode": "id"
+        },
+        "timeMin": "={{ $('Normaliza').item.json.start }}",
+        "timeMax": "={{ $('Normaliza').item.json.end }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -96,
+        -48
+      ],
+      "id": "67fbd0f8-6972-48ab-8678-18a6f3f93a1b",
+      "name": "BuscaAgenda",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "3g2Kh6mxA4ZgMr9d",
+          "name": "CalendarFernando"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node: \"FiltraDisponiveis\" - Versão 4 (Fonte Única: \"Normaliza\")\n// LÊ todas as configurações de horário e dados de contexto do nó \"Normaliza\".\n// PROCESSA expediente, intervalo de almoço, feriados e eventos da agenda.\n\n// ----- Feriados nacionais 2025–2029 (lista fixa) -----\nconst HOLIDAYS_BR = [\n  {\"data\":\"2025-01-01\",\"nome\":\"Confraternização Universal\"}, {\"data\":\"2025-04-18\",\"nome\":\"Paixão de Cristo\"},\n  {\"data\":\"2025-04-21\",\"nome\":\"Tiradentes\"}, {\"data\":\"2025-05-01\",\"nome\":\"Dia Mundial do Trabalho\"},\n  {\"data\":\"2025-09-07\",\"nome\":\"Independência do Brasil\"}, {\"data\":\"2025-10-12\",\"nome\":\"Nossa Senhora Aparecida\"},\n  {\"data\":\"2025-11-02\",\"nome\":\"Finados\"}, {\"data\":\"2025-11-15\",\"nome\":\"Proclamação da República\"},\n  {\"data\":\"2025-11-20\",\"nome\":\"Dia Nacional de Zumbi e da Consciência Negra\"}, {\"data\":\"2025-12-25\",\"nome\":\"Natal\"},\n  // ... (manter a lista completa de feriados)\n  {\"data\":\"2029-01-01\",\"nome\":\"Confraternização Universal\"}, {\"data\":\"2029-03-30\",\"nome\":\"Paixão de Cristo\"},\n  {\"data\":\"2029-04-21\",\"nome\":\"Tiradentes\"}, {\"data\":\"2029-05-01\",\"nome\":\"Dia Mundial do Trabalho\"},\n  {\"data\":\"2029-09-07\",\"nome\":\"Independência do Brasil\"}, {\"data\":\"2029-10-12\",\"nome\":\"Nossa Senhora Aparecida\"},\n  {\"data\":\"2029-11-02\",\"nome\":\"Finados\"}, {\"data\":\"2029-11-15\",\"nome\":\"Proclamação da República\"},\n  {\"data\":\"2029-11-20\",\"nome\":\"Dia Nacional de Zumbi e da Consciência Negra\"}, {\"data\":\"2029-12-25\",\"nome\":\"Natal\"}\n];\n\n// ----- Funções Auxiliares -----\nfunction toDateStrFromAny(input) { if (!input) return null; const m = String(input).match(/^(\\d{4}-\\d{2}-\\d{2})/); return m ? m[1] : null; }\nfunction getHHmm(dtStr) { if (!dtStr || typeof dtStr !== 'string') return \"00:00\"; const parts = dtStr.split('T')[1] || dtStr.split(' ')[1] || \"00:00:00\"; return parts.slice(0, 5); }\nfunction hhmmToMin(hhmm) { if (!hhmm || !/^\\d{2}:\\d{2}$/.test(hhmm)) return 0; const [h, m] = hhmm.split(':').map(Number); return (h * 60) + m; }\nfunction minToHHmm(totalMin) { const h = Math.floor(totalMin / 60); const m = totalMin % 60; return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`; }\nfunction overlaps(aStart, aEnd, bStart, bEnd) { return aStart < bEnd && bStart < aEnd; }\n\n// ----- 1. CAPTURA DE DADOS DE ENTRADA -----\n\n// Captura segura dos dados do nó \"Normaliza\"\nlet normalizaData = {};\ntry {\n  normalizaData = $items(\"Normaliza\")[0].json;\n} catch (e) {\n  throw new Error('O nó \"Normaliza\" não foi encontrado ou está vazio. Verifique o nome e a conexão do nó.');\n}\n\n// Captura de eventos da agenda (ex: Google Calendar) que vêm como input principal\nconst eventsInputRaw = $input.all();\nconst eventsInput = Array.isArray(eventsInputRaw) ? eventsInputRaw : [];\n\n// ----- 2. DETERMINAÇÃO DA DATA ALVO -----\n// Prioriza a data vinda do próprio nó \"Normaliza\"\nlet targetDate = toDateStrFromAny(normalizaData.start) || toDateStrFromAny(normalizaData.date) ||\n  (() => new Date().toISOString().slice(0, 10))();\n\n// ----- 3. PROCESSAMENTO DAS REGRAS DE HORÁRIO -----\n\n// Mapeia o número do dia da semana (0-6) para a chave do JSON de configuração\nconst weekdayMap = [\"domingo\", \"segunda-feira\", \"terça-feira\", \"quarta-feira\", \"quinta-feira\", \"sexta-feira\", \"sabado\"];\nconst dateObj = new Date(`${targetDate}T12:00:00Z`); // Use Z para UTC e evitar problemas de fuso\nconst weekdayName = weekdayMap[dateObj.getUTCDay()];\n\n// Extrai as regras para o dia da semana alvo a partir dos dados do \"Normaliza\"\nconst daySchedule = normalizaData[weekdayName] || \"00:00-00:00/00:00-00:00\";\nconst [workHours, breakHours] = daySchedule.split('/');\nconst [startWork, endWork] = workHours.split('-');\nconst [startBreak, endBreak] = (breakHours || \"00:00-00:00\").split('-');\n\nconst SLOT_MINUTES = hhmmToMin(normalizaData.duration || \"00:30\");\nconst dayStartMin = hhmmToMin(startWork);\nconst dayEndMin = hhmmToMin(endWork);\nconst breakStartMin = hhmmToMin(startBreak);\nconst breakEndMin = hhmmToMin(endBreak);\n\n// ----- 4. VERIFICAÇÃO DE FERIADOS -----\nconst holidaysFixedSet = new Set(HOLIDAYS_BR.map(h => h.data));\nconst holidaysFixedMap = new Map(HOLIDAYS_BR.map(h => [h.data, h.nome]));\n// Adiciona feriados extras vindos do próprio nó \"Normaliza\"\nconst holidaysExtra = Array.isArray(normalizaData.holidays) ? normalizaData.holidays.map(toDateStrFromAny).filter(Boolean) : [];\nholidaysExtra.forEach(d => holidaysFixedSet.add(d));\n\nconst isHoliday = holidaysFixedSet.has(targetDate);\nconst holidayName = isHoliday ? (holidaysFixedMap.get(targetDate) || \"Feriado\") : null;\n\n// ----- 5. MAPEAMENTO DE BLOQUEIOS (EVENTOS + ALMOÇO) -----\n\n// Normaliza eventos da agenda para o formato de minutos\nlet booked = eventsInput\n  .map(i => i.json || {})\n  .filter(ev => ev.start && ev.end && toDateStrFromAny(ev.start.dateTime || ev.start.date) === targetDate)\n  .map(ev => ({\n    id: ev.id || 'event',\n    startMin: hhmmToMin(getHHmm(ev.start.dateTime)),\n    endMin: hhmmToMin(getHHmm(ev.end.dateTime)),\n    label: `${getHHmm(ev.start.dateTime)}-${getHHmm(ev.end.dateTime)}`,\n  }));\n\n// Adiciona o intervalo de almoço à lista de bloqueios, se ele for válido\nif (breakStartMin < breakEndMin) {\n  booked.push({\n    id: 'break-time',\n    startMin: breakStartMin,\n    endMin: breakEndMin,\n    label: `${minToHHmm(breakStartMin)}-${minToHHmm(breakEndMin)} (Almoço)`,\n  });\n}\nbooked.sort((a, b) => a.startMin - b.startMin);\n\n// ----- 6. GERAÇÃO E FILTRAGEM DOS SLOTS DISPONÍVEIS -----\nconst candidateSlots = [];\nif (dayStartMin < dayEndMin && !isHoliday) {\n  for (let startMin = dayStartMin; startMin + SLOT_MINUTES <= dayEndMin; startMin += SLOT_MINUTES) {\n    candidateSlots.push({ startMin: startMin, endMin: startMin + SLOT_MINUTES });\n  }\n}\n\nconst available = candidateSlots.filter(slot =>\n  !booked.some(b => overlaps(b.startMin, b.endMin, slot.startMin, slot.endMin))\n);\n\n// ----- 7. FORMATAÇÃO DA SAÍDA -----\nconst result = {\n  date: targetDate,\n  timezone: \"America/Sao_Paulo\",\n  weekday: weekdayName,\n  isHoliday: isHoliday,\n  holidayName: holidayName,\n  workingHours: {\n    start: startWork,\n    end: endWork,\n    break: (breakStartMin < breakEndMin) ? `${startBreak}-${endBreak}` : null,\n  },\n  slotDurationMinutes: SLOT_MINUTES,\n  bookedSlots: booked.map(b => ({ id: b.id, label: b.label })),\n  availableSlots: available.map(s => ({\n    start: `${targetDate}T${minToHHmm(s.startMin)}:00-03:00`,\n    end: `${targetDate}T${minToHHmm(s.endMin)}:00-03:00`,\n    label: `${minToHHmm(s.startMin)}-${minToHHmm(s.endMin)}`,\n  })),\n};\n\nreturn [{ json: result }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        32,
+        -48
+      ],
+      "id": "2cb44478-f3b7-4bac-a894-353675fb7c3c",
+      "name": "FiltraDisponiveis"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "start"
+            },
+            {
+              "name": "caledarid"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -448,
+        -48
+      ],
+      "id": "e3d6469c-e909-43c4-a8dd-cc2c0a23256e",
+      "name": "EventoDisponibilidade"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Normaliza": {
+      "main": [
+        [
+          {
+            "node": "BuscaAgenda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscaAgenda": {
+      "main": [
+        [
+          {
+            "node": "FiltraDisponiveis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EventoDisponibilidade": {
+      "main": [
+        [
+          {
+            "node": "Normaliza",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4bbbae2a-23dc-4bda-bfd4-957183c3dc31",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "90585234410ca172721ae7500e05c0eb1db0fc54ccab2b8d63f0b588d3379c29"
+  },
+  "id": "LlGUFERo4dKbNPJK",
+  "tags": []
+}
