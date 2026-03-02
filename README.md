@@ -2,7 +2,7 @@
 
 ## Sobre o Projeto
 
-Este repositório é uma demonstração prática das minhas habilidades em automação e integração de sistemas utilizando n8n. O projeto foi desenvolvido para explorar e aplicar os conceitos descritos na vaga, como a criação de agentes de IA, integração via API e organização de dados.
+Este repositório é uma demonstração prática das minhas habilidades em automação e integração de sistemas utilizando n8n. O projeto foi desenvolvido para explorar e aplicar os conceitos basicos do N8N, como a criação de agentes de IA, integração via API e organização de dados.
 
 O sistema central é um agente de atendimento para WhatsApp, projetado de forma modular e escalável.
 
